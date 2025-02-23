@@ -16,10 +16,10 @@ node index.js
 ```
 ## **📸 Screenshots**  
 
-![Demo Site](https://imgur.com/a/4Dn1nTQ)  
-![Chatbot Interaction](https://imgur.com/a/JGwUMSV)  
-![Bot Commands](https://imgur.com/a/UYsJIrt)  
-![Admin Panel](https://imgur.com/a/UpLTMRe)  
+![Demo Site](https://i.imgur.com/6xVENVq.jpeg)  
+![Chatbot Interaction](https://imgur.com/ybriCgR)  
+![Bot Commands](https://imgur.com/D1SzZhA)  
+![Admin Panel](https://imgur.com/OBkelwn)  
 
 ---
 ## **🔑 Website Login Guide**  

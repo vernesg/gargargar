@@ -14,6 +14,14 @@ npm install
 ```bash
 node index.js
 ```
+## **📸 Screenshots**  
+
+![Demo Site](https://imgur.com/a/4Dn1nTQ)  
+![Chatbot Interaction](https://imgur.com/a/JGwUMSV)  
+![Bot Commands](https://imgur.com/a/UYsJIrt)  
+![Admin Panel](https://imgur.com/a/UpLTMRe)  
+
+---
 ## **🔑 Website Login Guide**  
 
 1. **Download [Webvium](https://mrepol742.github.io/webviumdev/) and Install**.  

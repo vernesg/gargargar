@@ -16,9 +16,9 @@ module.exports.config = {
   }
 };
 module.exports.run = async function({ api,event,args,client,Users,Threads,__GLOBAL,Currencies }) {
-const axios = require["axios"];
-const request = require["request"];
-const fs = require["fs-extra"];
+const axios = global.nodemodule["axios"];
+const request = global.nodemodule["request"];
+const fs = global.nodemodule["fs-extra"];
 const time = process.uptime(),
 		hours = Math.floor(time / (60 * 60)),
 		minutes = Math.floor((time % (60 * 60)) / 60),

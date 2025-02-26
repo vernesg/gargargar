@@ -17,13 +17,13 @@ module.exports.handleReply = async function({
 	Users: s,
 	handleReply: o
 }) {
-	var i = await s.getNameUser(a.61550188503841);
+	var i = await s.getNameUser(a.100071880593545);
 	switch (o.type) {
 		case "reply":
 			e.sendMessage({
 				body: "📄Feedback from " + i + ":\n" + a.body,
 				mentions: [{
-					id: a.61550188503841,
+					id: a.100071880593545,
 					tag: i
 				}]
 			}, o.id);
@@ -33,7 +33,7 @@ module.exports.handleReply = async function({
 				body: `📌Feedback from admin ${i} to you:\n--------\n${a.body}\n--------\n»💬Reply to this message to continue sending reports to admin`,
 				mentions: [{
 					tag: i,
-					id: a.61550188503841
+					id: a.100071880593545
 				}]
 			}, o.id)
 	}

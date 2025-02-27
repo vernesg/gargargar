@@ -7,7 +7,7 @@ module.exports.config = {
 		role: 0,
 		credits: "aminul",
 		description: "uptime",
-		hasPrefix: false,
+		hasPrefix: true,
 		cooldowns: 5,
 		aliases: ["up"]
 };

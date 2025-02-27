@@ -1,15 +1,16 @@
 /**
  * @file sim.js
  * @description A command module that interacts with a local JSON response system with teaching functionality.
- * @version 1.4.0
+ * @version 1.6.0
  * @author Developer
  */
 
-const fs = require('fs');
+const fs = require('fs').promises;
+const path = require('path');
 
 module.exports.config = {
     name: 'sim',
-    version: '1.4.0',
+    version: '1.6.0',
     role: 0,
     description: "Engage in conversation with a local JSON based bot or teach it new responses. Example: sim teach [keyword] [response] or sim [lang] [prompt]",
     usage: "sim [lang] [prompt] or sim teach [keyword] [response]",
@@ -18,7 +19,7 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event, args }) {
-    const supportedLanguages = ['en', 'bn', 'es', 'fr'];
+    const supportedLanguages = ['en', 'es', 'fr', 'bn']; // Added 'bn'
     let lang = "en";
     let input = args.join(" ").toLowerCase();
 
@@ -36,7 +37,7 @@ module.exports.run = async function({ api, event, args }) {
     if (args[0] === "teach" && args.length >= 3) {
         const keyword = args[1].toLowerCase();
         const response = args.slice(2).join(" ");
-        teachResponse(api, event, keyword, response);
+        await teachResponse(api, event, keyword, response);
         return;
     }
 
@@ -48,7 +49,9 @@ module.exports.run = async function({ api, event, args }) {
     try {
         api.sendMessage("Typing...", event.threadID, event.messageID);
 
-        const responses = JSON.parse(fs.readFileSync('./responses.json', 'utf8'));
+        const filePath = path.join(__dirname, 'responses.json');
+        const data = await fs.readFile(filePath, 'utf8');
+        const responses = JSON.parse(data);
         let response = "I don't understand. Please try again.";
 
         if (responses.languages && responses.languages[lang]) {
@@ -84,17 +87,27 @@ function getRandomElement(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-function teachResponse(api, event, keyword, response) {
+async function teachResponse(api, event, keyword, response) {
     try {
-        const responses = JSON.parse(fs.readFileSync('./responses.json', 'utf8'));
+        const filePath = path.join(__dirname, 'responses.json');
+        const data = await fs.readFile(filePath, 'utf8');
+        const responses = JSON.parse(data);
+
+        if (!responses.learned) {
+            responses.learned = {};
+        }
+
         if (!responses.learned[keyword]) {
             responses.learned[keyword] = [];
+        } else {
+            api.sendMessage(`The keyword "${keyword}" already exists. Adding this new response.`, event.threadID, event.messageID);
         }
+
         responses.learned[keyword].push(response);
-        fs.writeFileSync('./responses.json', JSON.stringify(responses, null, 2));
+        await fs.writeFile(filePath, JSON.stringify(responses, null, 2));
         api.sendMessage(`I have learned that when you say "${keyword}", I should respond with "${response}".`, event.threadID, event.messageID);
     } catch (error) {
         console.error("Teach error:", error);
         api.sendMessage("Failed to teach the response.", event.threadID, event.messageID);
     }
-}
+            }

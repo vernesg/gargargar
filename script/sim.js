@@ -18,7 +18,7 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event, args }) {
-    const supportedLanguages = ['en', 'es', 'fr'];
+    const supportedLanguages = ['en', 'bn', 'es', 'fr'];
     let lang = "en";
     let input = args.join(" ").toLowerCase();
 

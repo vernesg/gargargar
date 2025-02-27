@@ -1,27 +1,27 @@
 /**
  * @file sim.js
- * @description A command module that interacts with an AI chatbot API.
- * @version 1.2.0
+ * @description A command module that interacts with a local JSON response system with teaching functionality.
+ * @version 1.4.0
  * @author Developer
  */
 
+const fs = require('fs');
+
 module.exports.config = {
     name: 'sim',
-    version: '1.2.0',
+    version: '1.4.0',
     role: 0,
-    description: "Engage in conversation with an AI bot. You can specify a language. Example: sim en Hello",
-    usage: "sim [lang] [prompt]",
+    description: "Engage in conversation with a local JSON based bot or teach it new responses. Example: sim teach [keyword] [response] or sim [lang] [prompt]",
+    usage: "sim [lang] [prompt] or sim teach [keyword] [response]",
     credits: 'Developer',
     cooldown: 3,
 };
 
 module.exports.run = async function({ api, event, args }) {
-    const axios = require("axios");
-    const supportedLanguages = ['en', 'es', 'fr', 'de', 'ja', 'ko']; // Add more languages
-    let lang = "en"; // Default language is English
-    let input = args.join(" ");
+    const supportedLanguages = ['en', 'es', 'fr'];
+    let lang = "en";
+    let input = args.join(" ").toLowerCase();
 
-    // Check if a language code is provided (e.g., "en", "es", "fr")
     if (args.length > 1 && args[0].length === 2) {
         const potentialLang = args.shift();
         if (supportedLanguages.includes(potentialLang)) {
@@ -30,38 +30,71 @@ module.exports.run = async function({ api, event, args }) {
             api.sendMessage(`Invalid language code. Supported languages: ${supportedLanguages.join(', ')}`, event.threadID, event.messageID);
             return;
         }
-        input = args.join(" ");
+        input = args.join(" ").toLowerCase();
     }
 
-    // Validate if the user provided any input text
+    if (args[0] === "teach" && args.length >= 3) {
+        const keyword = args[1].toLowerCase();
+        const response = args.slice(2).join(" ");
+        teachResponse(api, event, keyword, response);
+        return;
+    }
+
     if (!input) {
-        api.sendMessage("Please provide a text prompt. Usage: sim [lang] [text]", event.threadID, event.messageID);
+        api.sendMessage("Please provide a text prompt or use 'teach' to teach me. Usage: sim [lang] [text] or sim teach [keyword] [response]", event.threadID, event.messageID);
         return;
     }
 
     try {
-        api.sendMessage("Typing...", event.threadID, event.messageID); // Add typing indicator
+        api.sendMessage("Typing...", event.threadID, event.messageID);
 
-        // Encode the user's input for use in the API URL
-        const content = encodeURIComponent(input);
+        const responses = JSON.parse(fs.readFileSync('./responses.json', 'utf8'));
+        let response = "I don't understand. Please try again.";
 
-        // Send a GET request to the SimSimi API
-        const response = await axios.get(`https://simsimi.fun/api/v2/?mode=talk&lang=${lang}&message=${content}&filter=false`);
-        const responseData = response.data;
-
-        // Check if the API returned an error
-        if (responseData.error) {
-            api.sendMessage(`The AI bot responded with an error: ${responseData.error}. Please try again later.`, event.threadID, event.messageID);
-        } else if (responseData.success) { //Check if the success parameter exists before using it.
-            // Send the API's successful response to the chat
-            api.sendMessage(responseData.success, event.threadID, event.messageID);
-        } else {
-            api.sendMessage("The AI bot returned an unexpected response. Please try again later.", event.threadID, event.messageID);
+        if (responses.languages && responses.languages[lang]) {
+            if (responses.languages[lang][input]) {
+                response = getRandomElement(responses.languages[lang][input]);
+            }
         }
 
+        for (const category in responses) {
+            if (category !== "languages" && category !== "learned") {
+                for (const keyword in responses[category]) {
+                    if (input.includes(keyword)) {
+                        response = getRandomElement(responses[category][keyword]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (responses.learned[input]) {
+            response = getRandomElement(responses.learned[input]);
+        }
+
+        api.sendMessage(response, event.threadID, event.messageID);
+
     } catch (error) {
-        // Handle any errors that occurred during the API request
-        console.error("Sim command error:", error); // Log the error for debugging
-        api.sendMessage("The AI bot is currently unavailable. Please try again later.", event.threadID, event.messageID);
+        console.error("Sim command error:", error);
+        api.sendMessage("An error occurred. Please try again later.", event.threadID, event.messageID);
     }
 };
+
+function getRandomElement(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+function teachResponse(api, event, keyword, response) {
+    try {
+        const responses = JSON.parse(fs.readFileSync('./responses.json', 'utf8'));
+        if (!responses.learned[keyword]) {
+            responses.learned[keyword] = [];
+        }
+        responses.learned[keyword].push(response);
+        fs.writeFileSync('./responses.json', JSON.stringify(responses, null, 2));
+        api.sendMessage(`I have learned that when you say "${keyword}", I should respond with "${response}".`, event.threadID, event.messageID);
+    } catch (error) {
+        console.error("Teach error:", error);
+        api.sendMessage("Failed to teach the response.", event.threadID, event.messageID);
+    }
+}

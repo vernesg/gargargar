@@ -1,66 +1,109 @@
-module.exports.config = {
-	name: "callad",
-	version: "1.0.1",
-	hasPermssion: 0,
-	credits: "NTKhang, ManhG Fix Get",
-	description: "Report bot's error to admin or comment",
-	usePrefix: true,
-	commandCategory: "report",
-	usages: "[Error encountered or comments]",
-	cooldowns: 5
-};
+async function getUserName(api, senderID) {
 
-module.exports.handleReply = async function({
-	api: e,
-	args: n,
-	event: a,
-	Users: s,
-	handleReply: o
-}) {
-	var i = await s.getNameUser(a.100071880593545);
-	switch (o.type) {
-		case "reply":
-			e.sendMessage({
-				body: "📄Feedback from " + i + ":\n" + a.body,
-				mentions: [{
-					id: a.100071880593545,
-					tag: i
-				}]
-			}, o.id);
-			break;
-		case "calladmin":
-			e.sendMessage({
-				body: `📌Feedback from admin ${i} to you:\n--------\n${a.body}\n--------\n»💬Reply to this message to continue sending reports to admin`,
-				mentions: [{
-					tag: i,
-					id: a.100071880593545
-				}]
-			}, o.id)
+	try {
+
+		const userInfo = await api.getUserInfo(senderID);
+
+		return userInfo[senderID]?.name || "User";
+
+	} catch (error) {
+
+		console.log(error);
+
+		return "User";
+
 	}
+
+}
+
+
+
+module.exports.config = {
+
+	name: "callad",
+
+	version: "1.0.1",
+
+	role: 0,
+
+	credits: "Aminulsordar",
+
+	description: "Report bot's error to admin or comment",
+
+	hasPrefix: false,
+
+	commandCategory: "report",
+
+	usages: "[Error encountered or comments]",
+
+	cooldowns: 10
+
 };
 
-module.exports.run = async function({
-	api: e,
-	event: n,
-	args: a,
-	Users: s,
-	Threads: o
-}) {
-	if (!a[0]) return e.sendMessage("You have not entered the content to report", n.61550188503841, n.messageID);
-	let i = await s.getNameUser(n.senderID);
-	var t = n.senderID,
-		d = n.threadID;
-	let r = (await o.getData(n.threadID)).threadInfo;
+
+
+module.exports["run"] = async function({ api, event, args, admin }) {
+
+	if (!args[0]) return api.sendMessage("You have not entered the content to report", event.threadID, event.messageID);
+
+
+
+	const name = await getUserName(api, event.senderID);
+
+	let mentions = [];
+
+		mentions.push({
+
+				tag: name,
+
+				id: event.senderID,
+
+		});
+
+	var t = event.senderID,
+
+			d = event.threadID;
+
+	let threadInfo = await api.getThreadInfo(event.threadID);
+
 	var l = require("moment-timezone").tz("Asia/Dhaka").format("HH:mm:ss D/MM/YYYY");
-	e.sendMessage(`At: ${l}\nYour report has been sent to the specified user's ID`, n.61550188503841, (() => {
-		const calladUserID = '100071880593545'; // Replace '100087212564100' with your actual UID
-		e.sendMessage(`${a.join(" ")}`, calladUserID, ((e, a) => global.client.handleReply.push({
-			name: this.config.name,
-			messageID: a.messageID,
-			author: n.senderID,
-			messID: n.messageID,
-			id: d,
-			type: "calladmin"
-		})))
-	}))
+
+
+
+	api.sendMessage(`Your report has been sent to the bot admin successfull\nAt: ${l}`, event.threadID, () => {
+
+		var s = admin;
+
+		for (let o of s) {
+
+			let s = threadInfo.threadName || "Unnamed";
+
+			api.shareContact(`▱▱▱[𝗖𝗔𝗟𝗟 𝗔𝗗𝗠𝗜𝗡]▱▱▱\n\n- User Name: ${name}\n- User ID: ${t}\n- Sent from group: ${threadInfo.threadName}\n- Thread ID: ${d}\n\nContent:\n─────────────────\n${args.join(" ")}\n─────────────────\nTime: ${l}`, t, o, (err, message) => {
+
+				if (!err) {
+
+					event.messageReply.senderID({
+
+						name: module.exports.config.name,
+
+						messageID: message.messageID,
+
+						author: event.senderID,
+
+						messID: event.messageID,
+
+						id: d,
+
+						type: event.type
+
+					});
+
+				}
+
+			});
+
+		}
+
+	});
+
 };

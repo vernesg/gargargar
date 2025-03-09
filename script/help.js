@@ -1,98 +1,162 @@
 module.exports.config = {
-  name: 'help',
-  version: '1.0.0',
+  name: "help",
+  version: "3.0.0",
   role: 0,
   hasPrefix: true,
-  aliases: ['info'],
-  description: "Beginner's guide",
-  usage: "Help [page] or [command]",
-  credits: 'Develeoper',
+  aliases: ["info"],
+  description: "View available commands, search for a command, or get details.",
+  usage: "help [page] | help [command] | help search [keyword] | help bookmark",
+  credits: "Developer",
 };
-module.exports.run = async function({
-  api,
-  event,
-  enableCommands,
-  args,
-  Utils,
-  prefix
-}) {
-  const input = args.join(' ');
+
+const userBookmarks = {}; // Store user-specific bookmarked commands
+
+module.exports.run = async function({ api, event, enableCommands, args, Utils, prefix }) {
   try {
-    const eventCommands = enableCommands[1].handleEvent;
-    const commands = enableCommands[0].commands;
+    const commands = enableCommands[0]?.commands || [];
+    const eventCommands = enableCommands[1]?.handleEvent || [];
+    const input = args.join(" ").toLowerCase();
+    const perPage = 5;
+    const userID = event.senderID;
+    
+    // Categorizing commands
+    const categories = {
+      "Moderation": ["ban", "unban", "kick"],
+      "Fun": ["joke", "meme", "quote"],
+      "Utilities": ["help", "ping", "userinfo"]
+    };
+
+    const sendInDM = (message, buttons) => {
+      api.sendMessage({
+        body: message,
+        attachment: buttons
+      }, userID, (err) => {
+        if (err) {
+          api.sendMessage("⚠️ Unable to send DM. Please check your settings!", event.threadID, event.messageID);
+        } else {
+          api.sendMessage("✅ Check your DMs for the help message!", event.threadID, event.messageID);
+        }
+      });
+    };
+
     if (!input) {
-      const pages = 20;
-      let page = 1;
-      let start = (page - 1) * pages;
-      let end = start + pages;
-      let helpMessage = `🌟𝗠𝗬 𝗔𝗩𝗔𝗜𝗟 𝗖𝗠𝗗 𝗟𝗜𝗦𝗧🌟\n\n`;
-      for (let i = start; i < Math.min(end, commands.length); i++) {
-        helpMessage += `\t${i + 1}. ╚═❯❯ ${prefix} \n╔═➳➳➳➳➳⋇⊶┫${commands[i]}💟 \n`;
-      }
-      helpMessage += '\n👀Event List:🆔\n\n';
-      eventCommands.forEach((eventCommand, index) => {
-        helpMessage += `\t${index + 1}. ╚═❯❯ ${prefix} \n╔═➳➳➳➳➳⋇⊶┫${eventCommand}☀️\n`;
-      });
-      helpMessage += `\nPage ${page}/${Math.ceil(commands.length / pages)}. To view the next page, type '${prefix}help page number'. To view information about a specific command, type '${prefix}help command name'.`;
-      api.sendMessage(helpMessage, event.threadID, event.messageID);
-    } else if (!isNaN(input)) {
-      const page = parseInt(input);
-      const pages = 20;
-      let start = (page - 1) * pages;
-      let end = start + pages;
-      let helpMessage = `🌟𝗠𝗬 𝗔𝗩𝗔𝗜𝗟 𝗖𝗠𝗗 𝗟𝗜𝗦𝗧🌟\n\n`;
-      for (let i = start; i < Math.min(end, commands.length); i++) {
-        helpMessage += `\t${i + 1}. ╚═❯❯ ${prefix} \n╔═➳➳➳➳➳⋇⊶┫${commands[i]} ☀️\n`;
-      }
-      helpMessage += '\n❤️‍🔥🌟𝗠𝗬 𝗘𝗩𝗘𝗡𝗧 𝗟𝗜𝗦𝗧🌟\n\n';
-      eventCommands.forEach((eventCommand, index) => {
-        helpMessage += `\t${index + 1}. ╚═❯❯ ${prefix} \n╔═➳➳➳➳➳⋇⊶┫${eventCommand} ☀️\n`;
-      });
-      helpMessage += `\nPage ${page} of ${Math.ceil(commands.length / pages)}`;
-      api.sendMessage(helpMessage, event.threadID, event.messageID);
-    } else {
-      const command = [...Utils.handleEvent, ...Utils.commands].find(([key]) => key.includes(input?.toLowerCase()))?.[1];
-      if (command) {
-        const {
-          name,
-          version,
-          role,
-          aliases = [],
-          description,
-          usage,
-          credits,
-          cooldown,
-          hasPrefix
-        } = command;
-        const roleMessage = role !== undefined ? (role === 0 ? '➛ Permission: user' : (role === 1 ? '➛ Permission: admin' : (role === 2 ? '➛ Permission: thread Admin' : (role === 3 ? '➛ Permission: super Admin' : '')))) : '';
-        const aliasesMessage = aliases.length ? `➛ Aliases: ${aliases.join(', ')}\n` : '';
-        const descriptionMessage = description ? `Description: ${description}\n` : '';
-        const usageMessage = usage ? `➛ Usage: ${usage}\n` : '';
-        const creditsMessage = credits ? `➛ Credits: ${credits}\n` : '';
-        const versionMessage = version ? `➛ Version: ${version}\n` : '';
-        const cooldownMessage = cooldown ? `➛ Cooldown: ${cooldown} second(s)\n` : '';
-        const message = ` 「 Command 」\n\n➛ Name: ${name}\n${versionMessage}${roleMessage}\n${aliasesMessage}${descriptionMessage}${usageMessage}${creditsMessage}${cooldownMessage}`;
-        api.sendMessage(message, event.threadID, event.messageID);
-      } else {
-        api.sendMessage('Command not found.', event.threadID, event.messageID);
-      }
+      return sendHelpPage(api, event, prefix, commands, categories, eventCommands, 1, perPage, sendInDM);
     }
+
+    if (!isNaN(input)) {
+      const page = parseInt(input);
+      return sendHelpPage(api, event, prefix, commands, categories, eventCommands, page, perPage, sendInDM);
+    }
+
+    if (input.startsWith("search ")) {
+      const searchTerm = input.replace("search ", "").trim();
+      return searchCommands(api, event, searchTerm, commands, sendInDM);
+    }
+
+    if (input === "bookmark") {
+      return showBookmarks(api, event, userID, sendInDM);
+    }
+
+    if (input.startsWith("bookmark ")) {
+      const commandToBookmark = input.replace("bookmark ", "").trim();
+      return bookmarkCommand(api, event, userID, commandToBookmark);
+    }
+
+    const command = commands.find(cmd => cmd.toLowerCase() === input);
+    if (command) {
+      return sendCommandDetails(api, event, command, Utils, sendInDM);
+    }
+
+    return api.sendMessage(`❌ Command '${input}' not found! Try '!help search [keyword]'.`, event.threadID, event.messageID);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return api.sendMessage(`❌ An error occurred while processing the help command.`, event.threadID, event.messageID);
   }
 };
-module.exports.handleEvent = async function({
-  api,
-  event,
-  prefix
-}) {
-  const {
-    threadID,
-    messageID,
-    body
-  } = event;
-  const message = prefix ? '🙃 system prefix : \n😏 you chat prefix: ' + prefix: "Sorry i don't have prefix";
-  if (body?.toLowerCase().startsWith('prefix')) {
-    api.sendMessage(message, threadID, messageID);
+
+// Function to send categorized help page
+function sendHelpPage(api, event, prefix, commands, categories, eventCommands, page, perPage, sendInDM) {
+  const totalPages = Math.ceil(Object.keys(categories).length / perPage);
+  const start = (page - 1) * perPage;
+  const end = Math.min(start + perPage, Object.keys(categories).length);
+  let message = `📜 **COMMAND LIST (Page ${page}/${totalPages})** 📜\n\n`;
+
+  Object.keys(categories).slice(start, end).forEach(category => {
+    message += `🔹 **${category} Commands:**\n`;
+    categories[category].forEach(cmd => {
+      message += `  - ${prefix}${cmd}\n`;
+    });
+    message += "\n";
+  });
+
+  message += `➡️ Use: **${prefix}help [page number]** to view more.\n📌 Use: **${prefix}help [command]** for details.\n🔍 Use: **${prefix}help search [keyword]** to search.\n⭐ Use: **${prefix}help bookmark** to view saved commands.`;
+
+  const buttons = [
+    { type: "postback", title: "⬅️ Previous", payload: `help_page_${page - 1}` },
+    { type: "postback", title: "➡️ Next", payload: `help_page_${page + 1}` }
+  ];
+
+  sendInDM(message, buttons);
+}
+
+// Function to search commands
+function searchCommands(api, event, searchTerm, commands, sendInDM) {
+  const matchedCommands = commands.filter(cmd => cmd.toLowerCase().includes(searchTerm));
+  if (matchedCommands.length === 0) {
+    return api.sendMessage(`❌ No commands found matching '${searchTerm}'.`, event.threadID, event.messageID);
   }
-    }
+
+  let message = `🔍 **Search Results for '${searchTerm}':**\n\n`;
+  matchedCommands.forEach(cmd => {
+    message += `🔹 ${cmd}\n`;
+  });
+
+  sendInDM(message);
+}
+
+// Function to send command details
+function sendCommandDetails(api, event, command, Utils, sendInDM) {
+  const commandDetails = Utils.commands.find(cmd => cmd.name.toLowerCase() === command.toLowerCase());
+  if (!commandDetails) {
+    return api.sendMessage(`❌ Command details not found for '${command}'.`, event.threadID, event.messageID);
+  }
+
+  const { name, version, role, aliases = [], description, usage, credits, cooldown } = commandDetails;
+  const roleMessage = role === 0 ? "👥 User" : role === 1 ? "🔧 Admin" : role === 2 ? "👑 Thread Admin" : role === 3 ? "🌟 Super Admin" : "Unknown";
+  const aliasesMessage = aliases.length ? `📌 Aliases: ${aliases.join(", ")}\n` : "";
+  const message = `🔎 **COMMAND DETAILS** 🔎\n\n` +
+    `📌 **Name:** ${name}\n` +
+    `📌 **Version:** ${version || "N/A"}\n` +
+    `📌 **Role:** ${roleMessage}\n` +
+    `${aliasesMessage}` +
+    `📌 **Description:** ${description || "No description available"}\n` +
+    `📌 **Usage:** ${usage || "No usage info"}\n` +
+    `📌 **Credits:** ${credits || "Unknown"}\n` +
+    `📌 **Cooldown:** ${cooldown ? `${cooldown} seconds` : "None"}\n`;
+
+  sendInDM(message);
+}
+
+// Function to bookmark a command
+function bookmarkCommand(api, event, userID, command) {
+  if (!userBookmarks[userID]) userBookmarks[userID] = [];
+  if (!userBookmarks[userID].includes(command)) {
+    userBookmarks[userID].push(command);
+    return api.sendMessage(`✅ Command '${command}' has been bookmarked!`, event.threadID, event.messageID);
+  }
+  return api.sendMessage(`⚠️ Command '${command}' is already bookmarked!`, event.threadID, event.messageID);
+}
+
+// Function to show user's bookmarks
+function showBookmarks(api, event, userID, sendInDM) {
+  if (!userBookmarks[userID] || userBookmarks[userID].length === 0) {
+    return api.sendMessage(`❌ You have no bookmarked commands. Use '!help bookmark [command]' to save one.`, event.threadID, event.messageID);
+  }
+
+  let message = `⭐ **Your Bookmarked Commands:**\n\n`;
+  userBookmarks[userID].forEach(cmd => {
+    message += `🔹 ${cmd}\n`;
+  });
+
+  sendInDM(message);
+}

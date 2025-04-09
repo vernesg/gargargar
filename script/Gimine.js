@@ -1,61 +1,35 @@
-const axios = require('axios');
-
-module.exports.config = {
-    name: 'gemini',
-    version: '1.0.0',
-    role: 0,
-    hasPrefix: true,
-    aliases: ['gemini'],
-    description: 'Interact with the Gemin',
-    usage: 'gemini [custom prompt] (attach image or not)',
-    credits: 'churchill',
-    cooldown: 3,
-};
-
-module.exports.run = async function({ api, event, args }) {
-    const attachment = event.messageReply?.attachments[0] || event.attachments[0];
-    const customPrompt = args.join(' ');
-
-    if (!customPrompt && !attachment) {
-        return api.sendMessage('Please provide a prompt or attach a photo for the gemini to analyze.', event.threadID, event.messageID);
-    }
-
-    let apiUrl = 'https://deku-rest-api-3jvu.onrender.com/gemini?';
-
-    if (attachment && attachment.type === 'photo') {
-        const prompt = customPrompt || 'answer this photo';
-        const imageUrl = attachment.url;
-        apiUrl += `prompt=${encodeURIComponent(prompt)}&url=${encodeURIComponent(imageUrl)}`;
-    } else {
-        apiUrl += `prompt=${encodeURIComponent(customPrompt)}`;
-    }
-
-    const initialMessage = await new Promise((resolve, reject) => {
-        api.sendMessage({
-            body: '🔍 Processing your request...',
-            mentions: [{ tag: event.senderID, id: event.senderID }],
-        }, event.threadID, (err, info) => {
-            if (err) return reject(err);
-            resolve(info);
-        }, event.messageID);
-    });
-
+module.exports = {
+  akane: {
+    name: "gemini",
+    permission: 0,
+    author: "Deku", //https://facebook.com/joshg101
+    description: "Talk to Gemini (conversational)",
+    prefix: false,
+    category: "AI",
+  },
+  start: async function ({ event, text, reply, react }) {
+    const axios = require("axios");
+    let prompt = text.join(" "),
+      uid = event.senderID,
+      url;
+    if (!prompt) return reply(`Please enter a prompt.`);
+    react('✍️');
     try {
-        const response = await axios.get(apiUrl);
-        const aiResponse = response.data.gemini; // Accessing the "gemini" key directly
-
-        const formattedResponse = `
-✨ 𝙶𝚎𝚖𝚒𝚗𝚒: here's the ans ${name}
-━━━━━━━━━━━━━━━━━━
-${aiResponse.trim()}
-━━━━━━━━━━━━━━━━━━
--Daniel Mojar
-        `;
-
-        await api.editMessage(formattedResponse.trim(), initialMessage.messageID);
-
-    } catch (error) {
-        console.error('Error:', error);
-        await api.editMessage('An error occurred, please try use "ai2" command.', initialMessage.messageID);
-    }
-};
+      const api = `https://gemini-api.replit.app`;
+      if (event.type == "message_reply"){
+        if (event.messageReply.attachments[0]?.type == "photo"){
+        url = encodeURIComponent(event.messageReply.attachments[0].url);
+        const res = (await axios.get(api + "/gemini?prompt="+prompt+"&url="+url+"&uid="+uid)).data;
+        return reply(res.gemini)
+        } else {
+          return reply('Please reply to an image.')
+        }
+      }
+      const rest = (await axios.get(api + "/gemini?prompt=" + prompt + "&uid=" + uid)).data;
+      return reply(rest.gemini)
+    } catch (e) {
+      console.log(e);
+      return reply(e.message);
+    } //end of catch
+  }, // end of start
+}; // end of exports

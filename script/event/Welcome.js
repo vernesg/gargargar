@@ -63,16 +63,18 @@ module.exports.handleEvent = async function ({ api, event }) {
 ╔══════════════════════╗
 ║ Hello ${prefix} ${name},
 ║ ──────────────────
-║ You're The ${memberCount} Member
+║ pang ${memberCount} ka boss
 ║ ──────────────────
-║ Of ${groupName} Group
+║ pls... add Daniel to ${groupName} 
 ║ ──────────────────
-║ Please Enjoy Your Stay
+║ injoy lang ${name}, sabi ni Daniel
 ║ ──────────────────
-║ And Make Lots Of Friends =)
-║ ──────-°°__𝗧𝗿𝘂𝘀𝘁 𝗺e 🔐 °__!!>☁️✨❤️
-║ My Owner ✦͙͙͙͙❥⃝∗⁎.ʚ 𝗔𝗺𝗶𝗻𝘂𝗹 𝗦𝗼𝗿𝗱𝗮𝗿 ɞ.⁎∗❥⃝**͙✦͙͙͙
-║ ❤️ Love you 😘 ummmma ❤️😍
+║  =)
+║ ──────-°°__ Daniel kalbo 🔐 °__!!>☁️✨❤️
+║ akong hari Daniel Mojar
+║ musta par 
+║ contact:
+║ danhackerowner@gmail.com
 ╚══════════════════════╝`;
 
                 await api.sendMessage({
@@ -85,18 +87,20 @@ module.exports.handleEvent = async function ({ api, event }) {
 
                 const welcomeMessage = `
 ╔══════════════════════╗
-║ Hello ${prefix} ${name},
+║ Hello ${name},
 ║ ──────────────────
 ║ You're The ${memberCount} Member
 ║ ──────────────────
-║ Of ${groupName} Group
+║ pls... add Daniel to ${groupName} 
 ║ ──────────────────
-║ Please Enjoy Your Stay
+║ injoy lang ${name}, sabi ni Daniel
 ║ ──────────────────
-║ And Make Lots Of Friends =)
-║ ──────-°°__𝗧𝗿𝘂𝘀𝘁 𝗺e 🔐 °__!!>☁️✨❤️
-║ My Owner ✦͙͙͙͙❥⃝∗⁎.ʚ 𝗔𝗺𝗶𝗻𝘂𝗹 𝗦𝗼𝗿𝗱𝗮𝗿 ɞ.⁎∗❥⃝**͙✦͙͙͙
-║ ❤️ Love you 😘 ummmma ❤️😍
+║  =)
+║ ──────-°°__ Daniel kalbo 🔐 °__!!>☁️✨❤️
+║ akong hari Daniel Mojar
+║ musta par 
+║ contact:
+║ danhackerowner@gmail.com
 ╚══════════════════════╝`;
                 await api.sendMessage({ body: welcomeMessage }, event.threadID);
             }

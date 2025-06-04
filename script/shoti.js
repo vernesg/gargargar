@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 module.exports.config = {
     name: "shoti",
     version: "1.0.0",
-    permission: 0,
+    role: 0,
     description: "Fetch a random Shoti video.",
     prefix: false,
     premium: false,

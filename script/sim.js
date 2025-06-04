@@ -24,7 +24,7 @@ module.exports.run = async function({ api, event, args }) {
     );
   }
 
-  const waitingMessage = 'Please wait, talking to SimSimi...';
+  const waitingMessage = '...';
   api.sendMessage(waitingMessage, event.threadID, async (err, info) => {
     if (err) return;
 

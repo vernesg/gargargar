@@ -1,6 +1,6 @@
 {
     "name": "ws3-fca",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "A node.js package for automating Facebook Messenger bot, and is one of the most advanced next-generation Facebook Chat API (FCA) by @NethWs3Dev (Kenneth Aceberos)",
     "main": "index.js",
     "scripts": {

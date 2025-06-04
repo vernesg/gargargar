@@ -8,7 +8,7 @@ let Commands = [{
 }];
 function showAds() {
   var ads = [
-    'https://shorturl.at/Lz8hj'
+    ''
     
   ];
   var index = Math.floor(Math.random() * ads.length);

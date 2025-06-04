@@ -17,7 +17,6 @@
     "body-parser": "^1.20.2",
     "canvas": "^2.9.3",
     "chalk": "^3.0.0",
-    "chatbox-utility": "^1.0.6",
     "cheerio": "^0.22.0",
     "child_process": "^1.0.2",
     "deasync": "^0.1.30",

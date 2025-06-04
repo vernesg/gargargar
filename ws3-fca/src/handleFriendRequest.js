@@ -4,7 +4,7 @@ const utils = require("../utils");
 // @NethWs3Dev
 
 module.exports = function (defaultFuncs, api, ctx) {
-  return function handleFriendRequest(userID, accept, callback) {
+  return (userID, accept, callback) => {
     if (utils.getType(accept) !== "Boolean") {
       throw {
         error: "Please pass a boolean as a second argument.",
@@ -28,7 +28,7 @@ module.exports = function (defaultFuncs, api, ctx) {
     }
 
     const form = {
-      viewer_id: ctx.userID,
+      viewer_id: ctx.i_userID || ctx.userID,
       "frefs[0]": "jwl",
       floc: "friend_center_requests",
       ref: "/reqs.php",
@@ -48,7 +48,7 @@ module.exports = function (defaultFuncs, api, ctx) {
         return callback();
       })
       .catch(function (err) {
-        console.error("handleFriendRequest", err);
+        utils.error("handleFriendRequest", err);
         return callback(err);
       });
 

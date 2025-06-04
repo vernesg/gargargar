@@ -1,3 +1,7 @@
+const axios = require('axios');
+const path = require('path');
+const fs = require('fs-extra');
+
 module.exports.config = {
     name: "pinterest",
     version: "1.0.0",
@@ -11,9 +15,6 @@ module.exports.config = {
 };
 
 module.exports.run = async function ({ api, event, args }) {
-    const axios = require("axios");
-    const fs = require("fs-extra");
-
     const input = args.join(" ");
     if (!input.includes("-")) {
         return api.sendMessage(
@@ -40,7 +41,7 @@ module.exports.run = async function ({ api, event, args }) {
 
         const imgData = [];
         for (let i = 0; i < Math.min(limit, results.length); i++) {
-            const imgPath = `${__dirname}/cache/pinterest_${i + 1}.jpg`;
+            const imgPath = path.join(__dirname, `cache/pinterest_${i + 1}.jpg`);
             const imageBuffer = (await axios.get(results[i], { responseType: "arraybuffer" })).data;
             fs.writeFileSync(imgPath, imageBuffer);
             imgData.push(fs.createReadStream(imgPath));
@@ -53,7 +54,7 @@ module.exports.run = async function ({ api, event, args }) {
 
         // Cleanup
         for (let i = 0; i < imgData.length; i++) {
-            const imgPath = `${__dirname}/cache/pinterest_${i + 1}.jpg`;
+            const imgPath = path.join(__dirname, `cache/pinterest_${i + 1}.jpg`);
             fs.unlinkSync(imgPath);
         }
 

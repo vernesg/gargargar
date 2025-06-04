@@ -1,30 +1,42 @@
 const axios = require('axios');
+
 module.exports.config = {
-  name: "quote",
-  version: "1.0.0",
+  name: 'quote',
+  version: '1.0.0',
   role: 0,
-  hasPrefix: true,
-  description: "Get a random inspirational quote.",
-  usage: "quote",
-  credits: "Developer",
-  cooldown: 0
+  hasPrefix: false,
+  aliases: ['inspire', 'quotes'],
+  description: 'Fetch a random inspirational quote.',
+  usage: 'quote',
+  credits: 'developer',
+  cooldown: 3,
 };
-module.exports.run = async ({
-  api,
-  event
-}) => {
-  const {
-    threadID,
-    messageID
-  } = event;
-  try {
-    const response = await axios.get('https://api.quotable.io/random');
-    const {
-      content,
-      author
-    } = response.data;
-    api.sendMessage(`"${content}" - ${author}`, threadID, messageID);
-  } catch (error) {
-    api.sendMessage("Sorry, I couldn't fetch a quote at the moment. Please try again later.", threadID, messageID);
-  }
+
+module.exports.run = async function({ api, event }) {
+  const threadID = event.threadID;
+  const messageID = event.messageID;
+
+  api.sendMessage('⌛ Fetching inspirational quote...', threadID, async (err, info) => {
+    if (err) return;
+
+    try {
+      const { data } = await axios.get('https://api.zetsu.xyz/random/quote', {
+        params: {
+          apikey: '80836f3451c2b3392b832988e7b73cdb'
+        }
+      });
+
+      if (data.status && data.result) {
+        const { quote, author } = data.result;
+        const message = `🌟 𝗤𝘂𝗼𝘁𝗲:\n"${quote}"\n\n— ${author || 'Unknown'}`;
+        return api.editMessage(message, info.messageID);
+      } else {
+        throw new Error('Invalid API response');
+      }
+
+    } catch (error) {
+      console.error('quote command error:', error.message);
+      return api.editMessage('❌ Error: Unable to fetch quote.', info.messageID);
+    }
+  });
 };

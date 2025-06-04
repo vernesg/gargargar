@@ -1,112 +1,59 @@
 const axios = require('axios');
 const fs = require('fs');
 
+const API_KEY = '86397083-298d-4b97-a76e-414c1208beae'; // your new API key
+
 module.exports.config = {
-    name: "welcomenoti",
-    version: "1.3.0", // Increment version for decorated code.
-    credits: "Aminus Sordar", // Add credits.
-    description: "Sends a decorated welcome message with an image when a new member joins.",
-    usages: "No command usage, triggered automatically.",
-    cooldown: 5, // Add a cooldown (in seconds).
+    name: "welcome",
+    version: "1.0.0",
 };
 
 module.exports.handleEvent = async function ({ api, event }) {
     if (event.logMessageType === "log:subscribe") {
+        const addedParticipants = event.logMessageData.addedParticipants;
+        const senderID = addedParticipants[0].userFbId;
+
+        let name = await api.getUserInfo(senderID).then(info => info[senderID].name);
+
+        // Truncate name if it's too long
+        const maxLength = 15;
+        if (name.length > maxLength) {
+            name = name.substring(0, maxLength - 3) + '...';
+        }
+
+        // Fetch group info
+        const groupInfo = await api.getThreadInfo(event.threadID);
+        const groupName = groupInfo.threadName || "this group";
+        const memberCount = groupInfo.participantIDs.length;
+        const background = groupInfo.imageSrc || "https://i.ibb.co/4YBNyvP/images-76.jpg";
+
+        // Fetch user avatar URL (optional: fallback if API allows)
+        let avatarUrl = null;
         try {
-            const addedParticipants = event.logMessageData.addedParticipants;
-            const senderID = addedParticipants[0].userFbId;
-            let userInfo = await api.getUserInfo(senderID);
-            let name = userInfo[senderID].name;
-            const gender = userInfo[senderID]?.gender;
-            const prefix = gender === 2 ? "Mr." : gender === 1 ? "Miss" : "";
+            const userInfo = await api.getUserInfo(senderID);
+            avatarUrl = userInfo[senderID].profileUrl || "https://i.ibb.co/G5mJZxs/rin.jpg"; // fallback avatar
+        } catch {
+            avatarUrl = "https://i.ibb.co/G5mJZxs/rin.jpg"; // fallback avatar
+        }
 
-            const maxLength = 15;
-            if (name.length > maxLength) {
-                name = name.substring(0, maxLength - 3) + '...';
-            }
+        // Construct URL for the new API
+        const url = `https://kaiz-apis.gleeze.com/api/welcome?username=${encodeURIComponent(name)}&avatarUrl=${encodeURIComponent(avatarUrl)}&groupname=${encodeURIComponent(groupName)}&bg=${encodeURIComponent(background)}&memberCount=${memberCount}&apikey=${API_KEY}`;
 
-            const groupInfo = await api.getThreadInfo(event.threadID);
-            const groupIcon = groupInfo.imageSrc || "https://i.ibb.co/G5mJZxs/rin.jpg";
-            const memberCount = groupInfo.participantIDs.length;
-            const groupName = groupInfo.threadName || "this group";
-            const background = groupInfo.imageSrc || "https://i.ibb.co/4YBNyvP/images-76.jpg";
-            const ownerID = groupInfo.adminIDs[0].id;
-            const ownerInfo = await api.getUserInfo(ownerID);
-            const ownerName = ownerInfo[ownerID].name;
-            const joinDate = new Date(event.logMessageData.time * 1000).toLocaleString();
-            const adminNames = groupInfo.adminIDs.map(async admin => (await api.getUserInfo(admin.id))[admin.id].name);
-            const adminsString = (await Promise.all(adminNames)).join(", ");
+        try {
+            const { data } = await axios.get(url, { responseType: 'arraybuffer' });
+            const filePath = './script/cache/welcome_image.jpg';
+            fs.writeFileSync(filePath, Buffer.from(data));
 
-            const startTime = global.startTime;
-            let uptime = "N/A";
-            if (startTime) {
-                const now = Date.now();
-                const diff = now - startTime;
-                const seconds = Math.floor(diff / 1000);
-                const minutes = Math.floor(seconds / 60);
-                const hours = Math.floor(minutes / 60);
-                const days = Math.floor(hours / 24);
-                uptime = `${days}d ${hours % 24}h ${minutes % 60}m ${seconds % 60}s`;
-            }
+            api.sendMessage({
+                body: `Everyone welcome the new member ${name} to ${groupName}!`,
+                attachment: fs.createReadStream(filePath)
+            }, event.threadID, () => fs.unlinkSync(filePath));
+        } catch (error) {
+            console.error("Error fetching welcome image:", error);
 
-            const url = `https://joshweb.click/canvas/welcome?name=${encodeURIComponent(name)}&groupname=${encodeURIComponent(groupName)}&groupicon=${encodeURIComponent(groupIcon)}&member=${memberCount}&uid=${senderID}&background=${encodeURIComponent(background)}&owner=${encodeURIComponent(ownerName)}&joindate=${encodeURIComponent(joinDate)}&admins=${encodeURIComponent(adminsString)}&uptime=${encodeURIComponent(uptime)}`;
-
-            try {
-                const { data } = await axios.get(url, { responseType: 'arraybuffer' });
-                const filePath = './cache/welcome_image.jpg';
-                if (!fs.existsSync('./cache')) {
-                    fs.mkdirSync('./cache');
-                }
-                fs.writeFileSync(filePath, Buffer.from(data));
-
-                const welcomeMessage = `
-╔══════════════════════╗
-║ Hello ${prefix} ${name},
-║ ──────────────────
-║ pang ${memberCount} ka boss
-║ ──────────────────
-║ pls... add Daniel to ${groupName} 
-║ ──────────────────
-║ injoy lang ${name}, sabi ni Daniel
-║ ──────────────────
-║  =)
-║ ──────-°°__ Daniel kalbo 🔐 °__!!>☁️✨❤️
-║ akong hari Daniel Mojar
-║ musta par 
-║ contact:
-║ danhackerowner@gmail.com
-╚══════════════════════╝`;
-
-                await api.sendMessage({
-                    body: welcomeMessage,
-                    attachment: fs.createReadStream(filePath)
-                }, event.threadID, () => fs.unlinkSync(filePath));
-
-            } catch (imageError) {
-                console.error("Error fetching welcome image:", imageError);
-
-                const welcomeMessage = `
-╔══════════════════════╗
-║ Hello ${name},
-║ ──────────────────
-║ You're The ${memberCount} Member
-║ ──────────────────
-║ pls... add Daniel to ${groupName} 
-║ ──────────────────
-║ injoy lang ${name}, sabi ni Daniel
-║ ──────────────────
-║  =)
-║ ──────-°°__ Daniel kalbo 🔐 °__!!>☁️✨❤️
-║ akong hari Daniel Mojar
-║ musta par 
-║ contact:
-║ danhackerowner@gmail.com
-╚══════════════════════╝`;
-                await api.sendMessage({ body: welcomeMessage }, event.threadID);
-            }
-        } catch (generalError) {
-            console.error("Error during welcome message processing:", generalError);
-            await api.sendMessage("An error occurred during welcome message processing.", event.threadID);
+            api.sendMessage({
+                body: `Everyone welcome the new member ${name} to ${groupName}!`
+            }, event.threadID);
         }
     }
 };

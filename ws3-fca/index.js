@@ -240,10 +240,11 @@ async function loginHelper(appState, apiCustomized, callback) {
     const jar = utils.getJar();
     utils.log("Logging in...");
     if (appState) {
-      ((Array.isArray(appState) ? appState.map(c => [c.name || c.key, c.value].join('=')) : appState.split(';')) || '').map(cookieString => {
+      ((Array.isArray(appState) ? appState.map(c => [c.name || c.key, c.value].join('=')) : appState?.split(';')) || '').map(cookieString => {
         const domain = ".facebook.com";
         const expires = new Date().getTime() + 1000 * 60 * 60 * 24 * 365;
-        jar.setCookie(`${cookieString}; expires=${expires}; domain=${domain}; path=/;`, `http://${domain}`);
+        const str = `${cookieString}; expires=${expires}; domain=${domain}; path=/;`;
+        jar.setCookie(str, `http://${domain}`);
       });
     } else {
       throw new Error("No cookie found. Enter cookie (whether JSON/header string)");

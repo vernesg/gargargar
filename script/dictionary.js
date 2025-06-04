@@ -1,47 +1,56 @@
+const axios = require('axios');
+
 module.exports.config = {
-  name: "dictionary",
-  version: "1.0.0",
+  name: 'dictionary',
+  version: '1.0.0',
   role: 0,
-  hasPrefix: true,
-  aliases: ['search'],
-  description: "Search words dictionary",
-  usage: "Ai [promot]",
-  credits: 'Develeoper',
-  cooldown: 5,
+  hasPrefix: false,
+  aliases: [],
+  description: 'Look up word definitions using an online dictionary.',
+  usage: 'dictionary <word>',
+  credits: 'developer',
+  cooldown: 3,
 };
-module.exports.run = async function({
-  api,
-  event,
-  args
-}) {
-  const input = args.join(" ");
-  if (!input) {
-    return api.sendMessage("Please provide a word to search for.", event.threadID, event.messageID);
+
+module.exports.run = async function ({ api, event, args }) {
+  const threadID = event.threadID;
+  const messageID = event.messageID;
+  const word = args.join(' ');
+
+  if (!word) {
+    return api.sendMessage('Please enter a word to look up.\nExample: dictionary hello', threadID, messageID);
   }
+
+  const apiUrl = `https://kaiz-apis.gleeze.com/api/dictionary?word=${encodeURIComponent(word)}&apikey=0c1e7e33-d809-48a6-9e92-d6691a722633`;
+
   try {
-    const response = await require("axios").get(encodeURI(`https://api.dictionaryapi.dev/api/v2/entries/en/${input}`));
-    const data = response.data[0];
-    const example = data.meanings[0].definitions.example;
-    const phonetics = data.phonetics;
-    const meanings = data.meanings;
-    let msg_meanings = "";
-    meanings.forEach((item) => {
-      const definition = item.definitions[0].definition;
-      const example = item.definitions[0].example ? `\n*example:\n \"${item.definitions[0].example[0].toUpperCase() + item.definitions[0].example.slice(1)}\"` : "";
-      msg_meanings += `\n• ${item.partOfSpeech}\n ${definition[0].toUpperCase() + definition.slice(1) + example}`;
-    });
-    let msg_phonetics = "";
-    phonetics.forEach((item) => {
-      const text = item.text ? `\n    /${item.text}/` : "";
-      msg_phonetics += text;
-    });
-    const msg = `❰ ❝ ${data.word} ❞ ❱` + msg_phonetics + msg_meanings;
-    api.sendMessage(msg, event.threadID, event.messageID);
-  } catch (error) {
-    if (error.response?.status === 404) {
-      api.sendMessage(`No definitions found for '${word}'.`, event.threadID, event.messageID);
-    } else {
-      api.sendMessage("An error occurred while fetching the definition. Please try again later.", event.threadID, event.messageID);
+    const { data } = await axios.get(apiUrl);
+
+    if (!data || !data.meanings || data.meanings.length === 0) {
+      return api.sendMessage(`No definitions found for "${word}".`, threadID, messageID);
     }
+
+    let message = `Definitions for: ${data.word}\n`;
+
+    data.meanings.forEach((meaning, i) => {
+      message += `\n${i + 1}. (${meaning.partOfSpeech})\n`;
+      meaning.definitions.forEach((def, j) => {
+        message += `  - ${def.definition}\n`;
+        if (def.example) message += `    Example: ${def.example}\n`;
+      });
+
+      if (meaning.synonyms && meaning.synonyms.length > 0) {
+        message += `  Synonyms: ${meaning.synonyms.join(', ')}\n`;
+      }
+
+      if (meaning.antonyms && meaning.antonyms.length > 0) {
+        message += `  Antonyms: ${meaning.antonyms.join(', ')}\n`;
+      }
+    });
+
+    api.sendMessage(message, threadID, messageID);
+  } catch (error) {
+    console.error('dictionary command error:', error.message);
+    return api.sendMessage('Error: Could not fetch definition. Please try again later.', threadID, messageID);
   }
 };

@@ -2,36 +2,63 @@ module.exports.config = {
     name: "pinterest",
     version: "1.0.0",
     hasPermssion: 0,
-    credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭",
+    credits: "Ry",
     description: "Image search",
     commandCategory: "Search",
     usePrefix: false,
-    usages: "[Text]",
+    usages: "[text] - [amount]",
     cooldowns: 0,
 };
-module.exports.run = async function({ api, event, args }) {
+
+module.exports.run = async function ({ api, event, args }) {
     const axios = require("axios");
     const fs = require("fs-extra");
-    const request = require("request");
-    const keySearch = args.join(" ");
-    if(keySearch.includes("-") == false) return api.sendMessage('Please enter in the format, example: pinterest Priyansh - 10 (it depends on you how many images you want to appear in the result)', event.threadID, event.messageID)
-    const keySearchs = keySearch.substr(0, keySearch.indexOf('-'))
-    const numberSearch = keySearch.split("-").pop() || 6
-    const res = await axios.get(`https://api-dien.kira1011.repl.co/pinterest?search=${encodeURIComponent(keySearchs)}`);
-    const data = res.data.data;
-    var num = 0;
-    var imgData = [];
-    for (var i = 0; i < parseInt(numberSearch); i++) {
-      let path = __dirname + `/cache/${num+=1}.jpg`;
-      let getDown = (await axios.get(`${data[i]}`, { responseType: 'arraybuffer' })).data;
-      fs.writeFileSync(path, Buffer.from(getDown, 'utf-8'));
-      imgData.push(fs.createReadStream(__dirname + `/cache/${num}.jpg`));
+
+    const input = args.join(" ");
+    if (!input.includes("-")) {
+        return api.sendMessage(
+            "❗ Please enter in the correct format.\n📌 Example: pinterest cat - 5",
+            event.threadID,
+            event.messageID
+        );
     }
-    api.sendMessage({
-        attachment: imgData,
-        body: numberSearch + 'Search results for keyword: '+ keySearchs
-    }, event.threadID, event.messageID)
-    for (let ii = 1; ii < parseInt(numberSearch); ii++) {
-        fs.unlinkSync(__dirname + `/cache/${ii}.jpg`)
+
+    const searchTerm = input.substring(0, input.indexOf("-")).trim();
+    const limit = parseInt(input.split("-").pop().trim()) || 5;
+
+    if (isNaN(limit) || limit < 1 || limit > 30) {
+        return api.sendMessage("⚠️ Please enter a number between 1 and 30.", event.threadID, event.messageID);
+    }
+
+    try {
+        const response = await axios.get(`https://ccprojectsapis.zetsu.xyz/api/pin?title=${encodeURIComponent(searchTerm)}&count=${limit}`);
+        const results = response.data?.data;
+
+        if (!results || results.length === 0) {
+            return api.sendMessage(`❌ No results found for "${searchTerm}".`, event.threadID, event.messageID);
+        }
+
+        const imgData = [];
+        for (let i = 0; i < Math.min(limit, results.length); i++) {
+            const imgPath = `${__dirname}/cache/pinterest_${i + 1}.jpg`;
+            const imageBuffer = (await axios.get(results[i], { responseType: "arraybuffer" })).data;
+            fs.writeFileSync(imgPath, imageBuffer);
+            imgData.push(fs.createReadStream(imgPath));
+        }
+
+        api.sendMessage({
+            body: `🖼️ Showing ${imgData.length} results for: "${searchTerm}"`,
+            attachment: imgData
+        }, event.threadID, event.messageID);
+
+        // Cleanup
+        for (let i = 0; i < imgData.length; i++) {
+            const imgPath = `${__dirname}/cache/pinterest_${i + 1}.jpg`;
+            fs.unlinkSync(imgPath);
+        }
+
+    } catch (error) {
+        console.error("Pinterest search error:", error);
+        api.sendMessage("❌ An error occurred while fetching images from Pinterest.", event.threadID, event.messageID);
     }
 };

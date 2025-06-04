@@ -28,7 +28,6 @@
     "luxon": "^3.4.4",
     "moment-timezone": "^0.5.37",
     "mqtt": "^3.0.0",
-    "nayan-videos-downloader": "^0.0.9",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.2.6",
     "node-schedule": "^2.1.1",

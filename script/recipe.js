@@ -1,42 +1,44 @@
 const axios = require('axios');
+
 module.exports.config = {
-  name: "recipe",
-  version: "1.0.0",
+  name: 'recipe',
+  version: '1.0.0',
   role: 0,
-  hasPrefix: true,
-  description: "Get a random recipe.",
-  usage: "recipe",
-  credits: "Developer",
-  cooldown: 0
+  hasPrefix: false,
+  aliases: [],
+  description: 'Get a detailed recipe based on the ingredient you provide.',
+  usage: 'recipe <ingredient>',
+  credits: 'developer',
+  cooldown: 3,
 };
-module.exports.run = async ({
-  api,
-  event
-}) => {
-  const {
-    threadID,
-    messageID
-  } = event;
-  try {
-    const response = await axios.get('https://www.themealdb.com/api/json/v1/1/random.php');
-    const recipe = response.data.meals[0];
-    const {
-      strMeal: title,
-      strCategory: category,
-      strArea: area,
-      strInstructions: instructions,
-      strMealThumb: thumbnail,
-      strYoutube: youtubeLink
-    } = recipe;
-    const recipeMessage = `
-        Title: ${title}
-        Category: ${category}
-        Area: ${area}
-        Instructions: ${instructions}
-        ${youtubeLink ? "YouTube Link: " + youtubeLink : ""}
-        `;
-    api.sendMessage(recipeMessage, threadID, messageID);
-  } catch (error) {
-    api.sendMessage("Sorry, I couldn't fetch a recipe at the moment. Please try again later.", threadID);
+
+module.exports.run = async function({ api, event, args }) {
+  const threadID = event.threadID;
+  const messageID = event.messageID;
+
+  if (!args || args.length === 0) {
+    return api.sendMessage('Please provide an ingredient.\nUsage: recipe <ingredient>', threadID, messageID);
   }
+
+  const ingredient = args.join(' ');
+  api.sendMessage(`Searching recipe for “${ingredient}”, please wait...`, threadID, async (err, info) => {
+    if (err) return;
+
+    const apiUrl = `https://kaiz-apis.gleeze.com/api/recipe?ingredients=${encodeURIComponent(ingredient)}&apikey=8aa2f0a0-cbb9-40b8-a7d8-bba320cb9b10`;
+
+    try {
+      const res = await axios.get(apiUrl);
+      const data = res.data;
+
+      if (!data?.recipe) {
+        return api.editMessage('No recipe found for that ingredient.', info.messageID);
+      }
+
+      return api.editMessage(data.recipe, info.messageID);
+
+    } catch (error) {
+      console.error('Recipe API Error:', error.message);
+      return api.editMessage('Error: Failed to fetch recipe. Try again later.', info.messageID);
+    }
+  });
 };

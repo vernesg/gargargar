@@ -6,7 +6,7 @@ module.exports.config = {
   name: "removebg",
   version: "1.0.0",
   role: 0,
-  credits: "Converted by ChatGPT",
+  credits: "Ry",
   aliases: [],
   usages: "< reply to image >",
   cooldown: 5,

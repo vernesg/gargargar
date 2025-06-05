@@ -119,9 +119,3 @@ body {
 #listOfCommands:not(.modal), #listOfCommandsEvent:not(.modal), #prefixOfCommands:not(.modal), #adminOfCommands:not(.modal) {
   box-shadow: none !important;
 }
-#json-data{
-background-image: url('https://i.imgur.com/MY80LCA.gif');
-    background-size: cover;
-    background-repeat: no-repeat;
-    border-color: blue;
-}

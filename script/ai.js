@@ -6,7 +6,7 @@ module.exports.config = {
   role: 0,
   hasPrefix: false,
   aliases: ['gpt', 'gimage'],
-  description: "Analyze question or image u Gemini Vision AI",
+  description: "Analyze question or  Vision",
   usage: "gemini [question] or reply to an image",
   credits: 'Developer',
   cooldown: 3,

@@ -25,63 +25,36 @@ module.exports.run = async function ({ api, event, args }) {
   api.sendMessage(`🔍 Searching SoundCloud for "${songName}"...`, event.threadID, event.messageID);
 
   try {
-    const url = `${BASE_URL}?search=${encodeURIComponent(songName)}`;
+    const searchUrl = `${BASE_URL}?search=${encodeURIComponent(songName)}`;
 
-    // HEAD request to check file size
-    const headRes = await axios.head(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-        'Content-Type': 'application/json',
-      }
-    });
-
+    // HEAD request to get file size
+    const headRes = await axios.head(searchUrl);
     const fileSize = parseInt(headRes.headers['content-length'], 10);
-    const isTooLarge = fileSize > 25 * 1024 * 1024;
 
-    const thumbnail = 'https://i.imgur.com/sVpNeaG.jpeg';
+    if (!fileSize || isNaN(fileSize)) {
+      return api.sendMessage(`❌ No track found or invalid file.`, event.threadID, event.messageID);
+    }
 
-    // Send UI preview card with link
-    const previewMessage = {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'generic',
-          elements: [{
-            title: `Here is your SoundCloud track: ${songName}`,
-            image_url: thumbnail,
-            subtitle: isTooLarge
-              ? '⚠️ File exceeds 25MB. Use the link to download.'
-              : 'Preparing to send audio...',
-            buttons: [{
-              type: 'web_url',
-              url,
-              title: isTooLarge ? 'Download File' : 'Open in Browser'
-            }]
-          }]
-        }
-      }
-    };
+    if (fileSize > 25 * 1024 * 1024) {
+      return api.sendMessage(`⚠️ File is too large to send (over 25MB). Try downloading manually:\n${searchUrl}`, event.threadID, event.messageID);
+    }
 
-    await api.sendMessage(previewMessage, event.threadID, event.messageID);
-
-    if (isTooLarge) return;
-
-    // Proceed to download and send the audio file
+    // Download the file
     const fileName = `${Date.now()}_soundcloud.mp3`;
     const filePath = path.join(__dirname, 'cache', fileName);
     const writer = fs.createWriteStream(filePath);
 
-    const response = await axios({
+    const audioStream = await axios({
       method: 'GET',
-      url,
+      url: searchUrl,
       responseType: 'stream'
     });
 
-    response.data.pipe(writer);
+    audioStream.data.pipe(writer);
 
     writer.on('finish', () => {
-      const size = fs.statSync(filePath).size;
-      if (size > 25 * 1024 * 1024) {
+      const downloadedSize = fs.statSync(filePath).size;
+      if (downloadedSize > 25 * 1024 * 1024) {
         fs.unlinkSync(filePath);
         return api.sendMessage(`⚠️ The file is too large to send (over 25MB).`, event.threadID, event.messageID);
       }

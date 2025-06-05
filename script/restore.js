@@ -32,14 +32,11 @@ module.exports.run = async function ({ api, event }) {
   try {
     api.sendMessage("⌛ Restoring image, please wait...", threadID, messageID);
 
-    // Download the restored image as arraybuffer
     const response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
 
-    // Ensure cache folder exists and save the image
     fs.ensureDirSync(path.dirname(tempPath));
     fs.writeFileSync(tempPath, Buffer.from(response.data, "binary"));
 
-    // Send the restored image back and clean temp file
     api.sendMessage({
       body: "✅ Here is your restored image!",
       attachment: fs.createReadStream(tempPath)

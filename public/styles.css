@@ -1,7 +1,5 @@
-/* Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Russo+One&display=swap');
 
-/* Global background + particles */
 body {
   font-family: 'Orbitron', sans-serif;
   background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
@@ -19,7 +17,6 @@ body {
   }
 }
 
-/* Animated headings */
 h1 {
   font-family: 'Russo One', sans-serif;
   font-size: 36px;
@@ -38,7 +35,6 @@ h1 {
   }
 }
 
-/* Buttons */
 button {
   font-weight: bold;
   font-family: 'Orbitron', sans-serif;
@@ -56,7 +52,6 @@ button:hover {
   box-shadow: 0 0 20px #00e6e6, 0 0 40px #00e6e6;
 }
 
-/* Profile button special effect */
 .navbar .nav-link.profile-btn {
   background: linear-gradient(45deg, #ff0080, #7928ca);
   border-radius: 25px;
@@ -72,7 +67,6 @@ button:hover {
   box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
 }
 
-/* Inputs and textareas */
 textarea, input[type="text"] {
   border: 2px solid #00ffff;
   border-radius: 12px;
@@ -89,14 +83,12 @@ textarea:focus, input[type="text"]:focus {
   outline: none;
 }
 
-/* Labels & Paragraphs */
 p, label {
   font-size: 16px;
   color: #dcdcdc;
   animation: fadeIn 2s ease-in;
 }
 
-/* Music control button */
 .music-control {
   position: fixed;
   bottom: 20px;
@@ -124,12 +116,10 @@ p, label {
   }
 }
 
-/* Checkbox */
 input[type="checkbox"] {
   accent-color: #00ffff;
 }
 
-/* Fade in effect */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -141,7 +131,6 @@ input[type="checkbox"] {
   }
 }
 
-/* Footer */
 .footer {
   text-align: center;
   padding: 20px;

@@ -5,81 +5,52 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="https://i.imgur.com/BNKq0fl.jpeg" type="image/jpeg" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="background-animation"></div>
-
-    <!-- YouTube Music Autoplay -->
-    <iframe
-      src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=YOUR_VIDEO_ID"
-      class="music-frame"
-      allow="autoplay"
-    ></iframe>
-
-    <!-- PFP Button -->
-    <div class="pfp-button">
-      <img src="https://i.imgur.com/BNKq0fl.jpeg" alt="Profile" />
+    <div class="header">
+      <img src="https://i.imgur.com/9yNj7E4.gif" alt="Banner" class="banner" />
+      <img src="https://i.imgur.com/BNKq0fl.jpeg" alt="Profile" class="profile-pic" />
     </div>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">Home</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav" style="margin-right: 70px;">
-        <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Home</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">Features</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Cookies Extractor</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/step_by_step_guide">Step-by-Step Guide</a>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="online_user">Active</a>
-          </li>
-        </ul>
+    <div class="profile-container">
+      <div class="profile-name">
+        Vernだ <i class="fas fa-check-circle verified-icon"></i>
       </div>
-    </nav>
+      <a href="https://github.com/vranyxx" class="github-link" target="_blank">
+        <i class="fab fa-github"></i> github.com/vranyxx
+      </a>
+      <p class="warning">
+        Hey there! I’ll warn you about using this project, your Facebook account is possible to get locked, restricted or suspended due to logging in to unknown location, automated behavior etc. Use a dummy account.
+      </p>
+    </div>
 
-    <!-- Main Content -->
+    <div class="button-container">
+      <button class="btn">View profile</button>
+      <button class="btn btn-secondary">View page</button>
+    </div>
+
     <div class="container">
-      <h1 class="text-center title">ENTER APPSTATE</h1>
+      <h2 class="subtitle">Facebook Appstate</h2>
       <form id="json-form" onsubmit="submitForm(event)">
-        <textarea id="json-data" class="form-control centered-textarea center-placeholder" placeholder=""></textarea>
+        <textarea id="json-data" placeholder="Paste your appstate here"></textarea>
       </form>
-      <p class="description">Greetings! Begin by entering your cookie. Scroll down to carefully review our Terms and Privacy.</p>
 
-      <h2 class="text-center subtitle">Terms and Conditions and Privacy Policy</h2>
-      <div class="terms">
-        <p>* Persistent Connection: Your chatbot stays active post-login, unless you change the password.</p>
-        <p>* Cookie Security: Never share your cookie; it's vital for your account's security.</p>
-        <p>* Strong Passwords: Use unique, robust passwords.</p>
-        <p>* Avoid Direct Bot Access: Doing so may disrupt service.</p>
-        <p>* Troubleshooting: If the bot is unresponsive, return to the website. If problems persist, change the account.</p>
-        <p>* Dummy Accounts: Use disposable accounts for added security.</p>
-        <p>* No Malicious Use: Malicious activity will result in termination and potential legal action.</p>
-        <p>* Disclaimers: We are not responsible for unauthorized access, account locking, or hosting platform actions.</p>
-        <p>* Terms of Service: Adhere to hosting platform terms.</p>
-      </div>
+      <h2 class="subtitle">Bot Details</h2>
+      <input type="text" placeholder="username" />
+      <input type="text" placeholder="password" />
+      <input type="text" placeholder="bot name (ex: ryuko)" />
 
       <div id="listOfCommands">
         <h2 class="subtitle">Select your commands</h2>
-        <button class="btn btn-primary" onclick="selectAllCommands()">Select all commands</button>
+        <button class="btn" onclick="selectAllCommands()">Select all commands</button>
       </div>
 
       <div id="listOfCommandsEvent">
         <h2 class="subtitle">Select your event commands</h2>
-        <button class="btn btn-primary" onclick="selectAllEvents()">Select all events</button>
+        <button class="btn" onclick="selectAllEvents()">Select all events</button>
       </div>
 
       <div id="prefixOfCommands">
@@ -97,7 +68,7 @@
       </label>
 
       <div class="text-center">
-        <button class="btn btn-primary submit-btn" onclick="State()" disabled id="submitButton">Submit</button>
+        <button class="btn submit-btn" onclick="State()" disabled id="submitButton">Submit</button>
       </div>
     </div>
 
@@ -109,8 +80,5 @@
     </footer>
 
     <script src="script.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   </body>
 </html>

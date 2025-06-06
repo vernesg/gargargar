@@ -1,140 +1,151 @@
-/* Global Styles */
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Russo+One&display=swap');
+
+/* Global background + particles */
 body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
-  color: #ffffff;
+  font-family: 'Orbitron', sans-serif;
+  background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
+  color: white;
   overflow-x: hidden;
+  animation: backgroundFlow 20s infinite alternate;
 }
 
-/* Navbar */
-.navbar {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  font-weight: 500;
+@keyframes backgroundFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
-.navbar-brand, .nav-link {
-  font-size: 1.1rem;
-  transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-  color: #ffc107 !important;
-}
-
-/* Heading Text Effects */
+/* Animated headings */
 h1 {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  background: linear-gradient(90deg, #ff8a00, #e52e71);
+  font-family: 'Russo One', sans-serif;
+  font-size: 36px;
+  background: linear-gradient(90deg, #00dbde, #fc00ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: pulseText 2s infinite;
-  text-shadow: 0 0 10px rgba(255, 138, 0, 0.6);
+  animation: glow 1.5s ease-in-out infinite alternate;
 }
 
-/* Text Area */
-textarea {
-  background-color: #1e1e2e;
-  color: #fff;
-  border: 2px solid #ffc107;
-  border-radius: 15px;
-  padding: 15px;
-  font-size: 1rem;
-  margin-bottom: 20px;
-  box-shadow: 0 0 10px #ffc107;
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 10px #fff, 0 0 20px #0ff, 0 0 30px #0ff;
+  }
+  100% {
+    text-shadow: 0 0 20px #ff00cc, 0 0 30px #ff00cc, 0 0 40px #ff00cc;
+  }
 }
 
 /* Buttons */
-button.btn {
-  background: linear-gradient(to right, #ff416c, #ff4b2b);
-  border: none;
-  border-radius: 12px;
+button {
   font-weight: bold;
-  transition: transform 0.3s, box-shadow 0.3s;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
 }
 
-button.btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px #ff4b2b;
+button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px #00e6e6, 0 0 40px #00e6e6;
 }
 
-/* Inputs */
-input[type="text"] {
+/* Profile button special effect */
+.navbar .nav-link.profile-btn {
+  background: linear-gradient(45deg, #ff0080, #7928ca);
+  border-radius: 25px;
+  padding: 6px 16px;
+  color: white !important;
+  font-weight: 600;
+  border: 2px solid #fff;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+}
+
+.navbar .nav-link.profile-btn:hover {
+  transform: scale(1.1) rotate(1deg);
+  box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+}
+
+/* Inputs and textareas */
+textarea, input[type="text"] {
+  border: 2px solid #00ffff;
   border-radius: 12px;
-  padding: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  padding: 10px;
   width: 100%;
-  margin-bottom: 20px;
-  border: 2px solid #00f0ff;
-  background: #151515;
-  color: #fff;
+  transition: 0.4s;
 }
 
-/* Checkboxes */
-label input[type="checkbox"] {
-  transform: scale(1.5);
-  accent-color: #28a745;
+textarea:focus, input[type="text"]:focus {
+  border-color: #ff00ff;
+  box-shadow: 0 0 10px #ff00ff;
+  outline: none;
 }
 
-/* Music Control */
+/* Labels & Paragraphs */
+p, label {
+  font-size: 16px;
+  color: #dcdcdc;
+  animation: fadeIn 2s ease-in;
+}
+
+/* Music control button */
 .music-control {
   position: fixed;
   bottom: 20px;
-  right: 20px;
-  background: #444;
-  padding: 12px 18px;
+  left: 20px;
+  background-color: #121212;
   color: #fff;
-  border-radius: 30px;
-  font-weight: bold;
+  padding: 10px 16px;
+  border-radius: 25px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 0 10px #00ffcc;
-  transition: background 0.3s;
+  box-shadow: 0 0 12px #0ff;
+  animation: pulse 3s infinite;
   z-index: 1000;
 }
 
-.music-control:hover {
-  background: #00ffcc;
-  color: #000;
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px #0ff;
+  }
+  50% {
+    box-shadow: 0 0 20px #0ff;
+  }
+  100% {
+    box-shadow: 0 0 5px #0ff;
+  }
 }
 
-/* Profile Button (Assumed ID or class added for styling if needed) */
-.profile-button {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  border: 2px solid #00ffff;
-  padding: 10px 20px;
-  border-radius: 30px;
-  background: rgba(0, 255, 255, 0.1);
-  color: #00ffff;
-  font-weight: bold;
-  z-index: 1000;
-  transition: transform 0.3s, box-shadow 0.3s;
+/* Checkbox */
+input[type="checkbox"] {
+  accent-color: #00ffff;
 }
 
-.profile-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px #00ffff;
+/* Fade in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
 }
 
 /* Footer */
 .footer {
   text-align: center;
-  padding: 15px;
-  background-color: #000;
-  color: #fff;
-  margin-top: 50px;
-  box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
-}
-
-/* Animations */
-@keyframes pulseText {
-  0% {
-    text-shadow: 0 0 10px #ff8a00;
-  }
-  50% {
-    text-shadow: 0 0 20px #e52e71;
-  }
-  100% {
-    text-shadow: 0 0 10px #ff8a00;
-  }
+  padding: 20px;
+  color: #aaa;
+  font-size: 14px;
+  animation: fadeIn 2s ease;
 }

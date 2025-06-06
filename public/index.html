@@ -7,7 +7,7 @@
     <link rel="icon" href="https://i.imgur.com/BNKq0fl.jpeg" type="image/jpeg" />
 
     <!-- Fonts & Icons -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Russo+One&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- Bootstrap -->
@@ -34,15 +34,13 @@
             </div>
           </li>
           <li class="nav-item"><a class="nav-link" href="online_user">Active</a></li>
+          <li class="nav-item"><a class="nav-link profile-btn" href="/profile">Profile</a></li>
         </ul>
       </div>
     </nav>
 
-    <!-- Profile Button -->
-    <button class="profile-button">👤 Profile</button>
-
     <div class="container">
-      <h1 class="col text-center" style="font-size: 30px; padding: 10px;">ENTER APPSTATE</h1>
+      <h1 class="col text-center">ENTER APPSTATE</h1>
       <form id="json-form" onsubmit="submitForm(event)">
         <div class="row">
           <div class="col-md-12">
@@ -54,7 +52,7 @@
     </div>
 
     <div class="container">
-      <h1 class="col text-center" style="font-size: 20px; padding: 10px;">Terms and Conditions and Privacy Policy</h1>
+      <h1 class="col text-center">Terms and Conditions and Privacy Policy</h1>
       <p>Chatbot Service Guidelines: * Persistent Connection: Your chatbot stays active post-login, unless you change the password.</p>
       <p>* Cookie Security: Never share your cookie; it's vital for your account's security.</p>
       <p>* Strong Passwords: Use unique, robust passwords. * Avoid Direct Bot Access: Doing so may disrupt service.</p>
@@ -65,26 +63,26 @@
       <p>* Terms of Service: Adhere to hosting platform terms.</p>
 
       <div class="container" id="listOfCommands">
-        <h1 style="font-size: 16px; padding: 10px;">Please choose your commands by tapping on the respective options.</h1>
+        <h1>Please choose your commands by tapping on the respective options.</h1>
         <button class="btn btn-primary" onclick="selectAllCommands()">Select all commands</button>
       </div>
 
       <div class="container" id="listOfCommandsEvent">
-        <h1 style="font-size: 16px; padding: 10px;">Please choose your event commands by tapping on the respective options.</h1>
+        <h1>Please choose your event commands by tapping on the respective options.</h1>
         <button class="btn btn-primary" onclick="selectAllEvents()">Select all events</button>
       </div>
 
       <div class="container" id="prefixOfCommands">
-        <h1 style="font-size: 16px; padding: 10px;">Please provide a prefix (optional). If you choose not to, entering 'non-prefix' will be considered as your input</h1>
+        <h1>Please provide a prefix (optional). If you choose not to, entering 'non-prefix' will be considered as your input</h1>
         <input type="text" id="inputOfPrefix" />
       </div>
 
       <div class="container" id="adminOfCommands">
-        <h1 style="font-size: 16px; padding: 10px;">Please provide an uid (optional). If you choose not to, entering 'default' will be considered as your input</h1>
+        <h1>Please provide an uid (optional). If you choose not to, entering 'default' will be considered as your input</h1>
         <input type="text" id="inputOfAdmin" />
       </div>
 
-      <label style="font-size: 14px; display: flex; align-items: center; padding: 22px;">
+      <label style="display: flex; align-items: center; padding: 22px;">
         <input type="checkbox" id="agreeCheckbox" style="margin-right: 10px;" />
         Checking this box certifies that I have read, understood, and agreed to the Terms and Conditions.
       </label>

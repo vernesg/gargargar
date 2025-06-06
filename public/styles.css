@@ -1,97 +1,140 @@
+/* Global Styles */
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
-  background-size: 400% 400%;
-  animation: gradientFlow 15s ease infinite;
+  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
   color: #ffffff;
   overflow-x: hidden;
-  position: relative;
 }
 
-body::before {
-  content: '';
-  background: url('https://i.imgur.com/BNKq0fl.jpeg') no-repeat center center;
-  background-size: cover;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
-  border: 2px solid white;
-}
-
-@keyframes gradientFlow {
-  0% {background-position: 0% 50%;}
-  50% {background-position: 100% 50%;}
-  100% {background-position: 0% 50%;}
-}
-
+/* Navbar */
 .navbar {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  background-color: rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  font-weight: 500;
 }
 
-textarea#json-data,
-input[type="text"] {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid #ffffff33;
-  color: white;
-  animation: pulse 2s infinite;
-  backdrop-filter: blur(3px);
+.navbar-brand, .nav-link {
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
 }
 
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 5px rgba(255,255,255,0.2); }
-  50% { box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+.nav-link:hover {
+  color: #ffc107 !important;
 }
 
-textarea::placeholder,
-input::placeholder {
-  color: rgba(255,255,255,0.5);
+/* Heading Text Effects */
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff8a00, #e52e71);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: pulseText 2s infinite;
+  text-shadow: 0 0 10px rgba(255, 138, 0, 0.6);
 }
 
-button {
-  transition: all 0.3s ease;
-  font-weight: 600;
-  border-radius: 8px;
+/* Text Area */
+textarea {
+  background-color: #1e1e2e;
+  color: #fff;
+  border: 2px solid #ffc107;
+  border-radius: 15px;
+  padding: 15px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px #ffc107;
 }
 
-button:hover {
+/* Buttons */
+button.btn {
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+button.btn:hover {
   transform: scale(1.05);
-  background-color: #00bcd4 !important;
+  box-shadow: 0 0 15px #ff4b2b;
 }
 
-.footer {
-  background: rgba(0, 0, 0, 0.3);
-  text-align: center;
-  padding: 20px;
-  color: white;
-  position: relative;
-  margin-top: 50px;
-  border-top: 1px solid #ffffff33;
+/* Inputs */
+input[type="text"] {
+  border-radius: 12px;
+  padding: 8px;
+  width: 100%;
+  margin-bottom: 20px;
+  border: 2px solid #00f0ff;
+  background: #151515;
+  color: #fff;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+/* Checkboxes */
+label input[type="checkbox"] {
+  transform: scale(1.5);
+  accent-color: #28a745;
 }
 
+/* Music Control */
 .music-control {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: #ffffff10;
-  border: 1px solid #ffffff33;
-  border-radius: 12px;
-  padding: 8px 14px;
-  color: white;
+  background: #444;
+  padding: 12px 18px;
+  color: #fff;
+  border-radius: 30px;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 14px;
+  box-shadow: 0 0 10px #00ffcc;
+  transition: background 0.3s;
   z-index: 1000;
-  animation: bounce 2s infinite;
-  backdrop-filter: blur(5px);
+}
+
+.music-control:hover {
+  background: #00ffcc;
+  color: #000;
+}
+
+/* Profile Button (Assumed ID or class added for styling if needed) */
+.profile-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  border: 2px solid #00ffff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+  font-weight: bold;
+  z-index: 1000;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.profile-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00ffff;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 15px;
+  background-color: #000;
+  color: #fff;
+  margin-top: 50px;
+  box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+}
+
+/* Animations */
+@keyframes pulseText {
+  0% {
+    text-shadow: 0 0 10px #ff8a00;
+  }
+  50% {
+    text-shadow: 0 0 20px #e52e71;
+  }
+  100% {
+    text-shadow: 0 0 10px #ff8a00;
+  }
 }

@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Automated Facebook Bot</title>
+    <title>Cloudy Facebook Bot</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="https://i.imgur.com/BNKq0fl.jpeg" type="image/jpeg" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Background Music -->
-    <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
-
     <div class="header">
-      <img src="https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUybGQzdDFweTNpdDJ1bHVheDIwYjJyNmlrZ3NyMnk2ZGZ5MnRzbzlqMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KFxqeA1uK0vBCokNkK/giphy.gif" alt="Banner" class="banner" />
-      <img src="https://i.imgur.com/bfELRaR.jpeg" alt="Profile" class="profile-pic" />
+      <img src="https://media3.giphy.com/media/v1.Y2lkPTZjMDliOTUyM213dG5qbTlodW0yMGU5OWR1cHlubnh2eXQ3bGh4bzVrYzNnaWx0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3lhNU3rUQxC8nF2AHL/giphy.gif" alt="Banner" class="banner" />
+      <img src="https://i.imgur.com/Zu15xb4.jpeg" alt="Profile" class="profile-pic" />
     </div>
 
     <div class="profile-container">
       <div class="profile-name">
-        Vernだ <i class="fas fa-check-circle verified-icon"></i>
+        Cloudyつ⁠≧⁠▽⁠≦⁠)⁠つ <i class="fas fa-check-circle verified-icon"></i>
       </div>
-      <a href="https://github.com/vranyxx" class="github-link" target="_blank">
-        <i class="fab fa-github"></i> github.com/vranyxx
+      <a href="https://github.com/cloudy" class="github-link" target="_blank">
+        <i class="fab fa-github"></i> github.com/cloudy
       </a>
       <p class="warning">
-        Just a reminder by @vern, using this bot can cause suspension, locked of your account so much better to use your dummy account. If there's a trouble about using this site just message me with no hesitation, thanks and enjoy!.
+        Hello, this is @cloud I have small reminder if ever you will use this site please don't do anything inappropriate, and also just follow what the statements is, enjoy!!
       </p>
     </div>
 
@@ -75,6 +72,8 @@
       </div>
     </div>
 
+    <div id="audio-container" style="display:none;"></div>
+
     <div id="result" class="container text-center" style="display: none;"></div>
 
     <footer class="footer">
@@ -83,15 +82,25 @@
     </footer>
 
     <script src="script.js"></script>
-
-    <!-- Music Autoplay After First Click -->
     <script>
-      const music = document.getElementById("bgMusic");
-      const startMusic = () => {
-        music.play().catch(() => {});
-        document.removeEventListener("click", startMusic);
-      };
-      document.addEventListener("click", startMusic);
+      let audioStarted = false;
+
+      document.addEventListener("click", function () {
+        if (!audioStarted) {
+          const iframe = document.createElement("iframe");
+          iframe.width = "1";
+          iframe.height = "1";
+          iframe.src = "https://www.youtube.com/embed/JdU0gDDCiB8?autoplay=1&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3";
+          iframe.frameBorder = "0";
+          iframe.allow = "autoplay; encrypted-media";
+          iframe.allowFullscreen = true;
+          iframe.style.opacity = "0";
+          iframe.style.position = "absolute";
+          iframe.style.left = "-9999px";
+          document.getElementById("audio-container").appendChild(iframe);
+          audioStarted = true;
+        }
+      });
     </script>
   </body>
 </html>
